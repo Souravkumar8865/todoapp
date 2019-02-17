@@ -10,12 +10,37 @@ def index(request):
     form=TodoListForm()
 
     context = {'todo_items' : todo_items, 'form' : form }
-    return render(request,' todolist/index.html', context)
+    return render(request,'todolist/index.html', context)
 
 @require_POST
 def addTodoItem(request):
-    form = todoListForm(request.POST)
+    form = TodoListForm(request.POST)
+    print("hbsjf")
+    if form.is_valid():
+        print("yes")
+        new_todo =Todolist(text=request.POST['text'])
+        new_todo.save()
 
-    print(request.POST['text'])
     return redirect('index')
 
+
+def completedTodo(request,todo_id):
+    todo = Todolist.objects.get(pk=todo_id)
+    todo.completed = True
+    todo.save()
+
+    return redirect('index')
+
+
+def deleteCompleted(request):
+    Todolist.objects.filter(completed =True).delete()
+
+    return redirect('index')
+
+
+
+
+def deleteAll(request):
+    Todolist.objects.all().delete()
+
+    return redirect('index')
